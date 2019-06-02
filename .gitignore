@@ -1,0 +1,11 @@
+ubuntu-bionic-18.04-cloudimg-console.log
+.vagrant
+vendor
+.hypress/htdocs/wp
+node_modules
+src/bundle.js
+src/style.css
+.hypress/hypress.local.pem
+.hypress/ansible/hypress.retry
+.hypress/*.pem
+.hypress
