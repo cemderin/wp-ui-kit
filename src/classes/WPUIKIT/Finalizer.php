@@ -11,6 +11,24 @@
      * @package WPUIKIT
      */
     abstract class Finalizer {
+        protected $finalizerAction = 'admin_menu';
+
+        /**
+         * @return string
+         */
+        public function getFinalizerAction()
+        {
+            return $this->finalizerAction;
+        }
+
+        /**
+         * @param string $finalizerAction
+         */
+        public function setFinalizerAction($finalizerAction)
+        {
+            $this->finalizerAction = $finalizerAction;
+        }
+
         /**
          * The finalize method, registers the latest state as WordPress entity
          * @return void
@@ -22,6 +40,6 @@
          * Registers the finalizer
          */
         public function __construct() {
-            add_action('admin_menu', array($this, 'finalize'));
+            add_action($this->getFinalizerAction(), array($this, 'finalize'));
         }
     }
