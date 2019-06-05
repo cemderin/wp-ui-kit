@@ -2,15 +2,22 @@
 
     namespace WPUIKIT;
 
-    class Page extends Finalizer {
+    use WPUIKIT\UI\AbstractElement;
+
+    class Menu extends AbstractClass {
         protected $pageTitle = null;
         protected $menuTitle = null;
         protected $capability = 'manage_options';
         protected $menuSlug = null;
-        protected $function = '';
+        protected $function = null;
         protected $iconUrl = null;
         protected $position = null;
-        protected $subpages = array();
+        protected $submenus = array();
+
+        /**
+         * @var AbstractElement
+         */
+        protected $renderElement = null;
 
         public function __construct(
             $pageTitle,
@@ -20,9 +27,10 @@
             $function = null,
             $iconUrl = null,
             $position = null,
-            $subpages = null
+            $renderElement = null
         ) {
-            parent::__construct();
+            $this->_register();
+
             $this->setPageTitle($pageTitle);
 
             if($menuTitle) $this->setMenuTitle($menuTitle);
@@ -34,14 +42,13 @@
             if(!$menuSlug) $this->setMenuSlug($pageTitle);
 
             if($function) $this->setFunction($function);
-            if(!$function) $this->setFunction(function() {});
+            if(!$function) $this->setFunction(array($this, 'output'));
 
             if($iconUrl) $this->setIconUrl($iconUrl);
 
             if($position) $this->setPosition($position);
 
-            if($subpages) $this->setSubpages($subpages);
-
+            if($renderElement) $this->setRenderElement($renderElement);
         }
 
         /**
@@ -77,7 +84,7 @@
         }
 
         /**
-         * @return null
+         * @return string
          */
         public function getCapability()
         {
@@ -85,7 +92,7 @@
         }
 
         /**
-         * @param null $capability
+         * @param string $capability
          */
         public function setCapability($capability)
         {
@@ -156,39 +163,71 @@
             $this->position = $position;
         }
 
+        protected function _register() {
+
+            add_action('admin_menu', function() {
+                add_menu_page(
+                    $this->pageTitle,
+                    $this->menuTitle,
+                    $this->capability,
+                    $this->menuSlug,
+                    $this->function,
+                    $this->iconUrl,
+                    $this->position
+                );
+            });
+
+        }
+
+        /**
+         * @return AbstractElement
+         */
+        public function getRenderElement()
+        {
+            return $this->renderElement;
+        }
+
+        /**
+         * @param AbstractElement $renderElement
+         */
+        public function setRenderElement($renderElement)
+        {
+            $this->renderElement = $renderElement;
+        }
+
         /**
          * @return array
          */
-        public function getSubpages()
+        public function getSubmenus()
         {
-            return $this->subpages;
+            return $this->submenus;
         }
 
         /**
-         * @param array $subpages
+         * @param array $submenus
          */
-        public function setSubpages($subpages)
+        public function setSubmenus($submenus)
         {
-            $this->subpages = $subpages;
+            foreach($submenus as $submenu) {
+                $submenu->setParentSlug($this->getMenuSlug());
+            }
+
+            $this->submenus = $submenus;
         }
 
-        public function addSubpage(Subpage $subpage) {
-            $subpage->setParentSlug($this->getMenuSlug());
-
-            $this->subpages[] = $subpage;
+        /**
+         * @param Submenu $submenu
+         */
+        public function addSubmenu(Submenu $submenu) {
+            $submenu->setParentSlug($this->getMenuSlug());
+            $this->submenus[] = $submenu;
         }
 
 
 
-        public function finalize() {
-            add_menu_page(
-                $this->pageTitle,
-                $this->menuTitle,
-                $this->capability,
-                $this->menuSlug,
-                $this->function,
-                $this->iconUrl,
-                $this->position
-            );
+
+
+        public function output() {
+            if($this->getRenderElement()) echo $this->getRenderElement();
         }
     }

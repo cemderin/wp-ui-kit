@@ -1,7 +1,8 @@
 <?php
+
     namespace WPUIKIT;
 
-    class Subpage extends Page {
+    class Submenu extends Menu {
         protected $parentSlug = null;
 
         public function __construct(
@@ -38,15 +39,18 @@
             $this->parentSlug = $parentSlug;
         }
 
-        public function finalize() {
-            add_submenu_page(
-                $this->parentSlug,
-                $this->pageTitle,
-                $this->menuTitle,
-                $this->capability,
-                $this->menuSlug,
-                $this->function
-            );
+        protected function _register() {
+
+            add_action('admin_menu', function() {
+                add_submenu_page(
+                    $this->parentSlug,
+                    $this->pageTitle,
+                    $this->menuTitle,
+                    $this->capability,
+                    $this->menuSlug,
+                    $this->function
+                );
+            });
 
         }
     }
