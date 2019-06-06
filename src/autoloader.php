@@ -16,8 +16,6 @@
 
             if(file_exists($filePath)) return require_once $filePath;
 
-            throw new Exception('Class '. $className.' not found at '. $filePath);
-
         });
     } catch(Exception $e) {
 

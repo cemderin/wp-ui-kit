@@ -17,10 +17,10 @@
     $autoloader = implode(DIRECTORY_SEPARATOR, $autoloader);
     require_once $autoloader;
 
-    // require_once 'functions.php';
+    require_once 'functions.php';
 
 function myplugin_activate() {
     // require_once 'functions.php';
-    new \WPUIKIT\Notice('Hi');
+    // new \WPUIKIT\Notice('Hi');
 }
 register_activation_hook( __FILE__, 'myplugin_activate' );
